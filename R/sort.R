@@ -73,7 +73,7 @@ mysort.int <- function(x, partial = NULL, na.last = NA, decreasing = FALSE,
     }
   }
 
-  if(method == "auto"){
+  if(is.na(method) || method == "auto"){
     sorted_part_with_idx <- myautosort(y,  decreasing = decreasing, idx=non_NA_index)
   }
   else if(method == "shell"){
