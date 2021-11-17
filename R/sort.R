@@ -86,7 +86,7 @@ mysort.int <- function(x, partial = NULL, na.last = NA, decreasing = FALSE,
     sorted_part_with_idx <- myquicksort_idx(y,  decreasing = decreasing, idx=non_NA_index)
   }
   else{
-    stop("method has to be in c(\"auto\", \"shell\", \"quick\", \"radix\") ")
+    stop("method has to be in c(\"auto\", \"shell\", \"quick\", \"merge\") ")
   }
   if(index.return){
     if(is.na(na.last)){
