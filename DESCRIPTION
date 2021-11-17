@@ -1,0 +1,11 @@
+Package: yindisort
+Type: Package
+Title: Sort function
+Version: 0.1.0
+Author: Yindi Ma
+Maintainer: Yindi Ma <yindim@umich.edu>
+Description: Sort (or order) a vector or factor (partially) into ascending or descending order.
+
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
