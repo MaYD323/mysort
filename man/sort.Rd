@@ -43,7 +43,7 @@ logical indicating if the ordering index vector should be returned as well. Supp
 \description{
 mysort is a generic function for which methods can be written, and mysort.int is the internal method which is compatible with S if only the first three arguments are used.
 
-The "auto" method selects "merge" for short (less than 2^31 elements) vectors vectors and factors; otherwise, "shell".
+The "auto" method selects "shell" for short (less than 2^31 elements) vectors vectors and factors; otherwise, "quick".
 
 "Merge" sort is an efficient, general-purpose, and comparison-based sorting algorithm. Most implementations produce a stable sort, which means that the order of equal elements is the same in the input and output with worst case complexity of O({n*log(n)}).
 

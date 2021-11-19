@@ -254,12 +254,12 @@ myshellsort <- function(x, decreasing = FALSE, idx){ #Shell sort based on interv
   return(list("x"=x, "ix"=idx))
 }
 
-myautosort <- function(x, decreasing = FALSE, idx){ #select sort method, if sample size is small, then use mergesort, otherwise shell sort
+myautosort <- function(x, decreasing = FALSE, idx){ #select sort method, if sample size is small, then use shellsort, otherwise quick sort
   n <- length(x)
   if(n < 2^31){
-    return(mymergesort(x, decreasing = decreasing, idx = idx))
+    return(myshellsort(x, decreasing = decreasing, idx = idx))
   }
   else{
-    return(myshellsort(x, decreasing = decreasing, idx = idx))
+    return(myquicksort_idx(x, decreasing = decreasing, idx = idx))
   }
 }
