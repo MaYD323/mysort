@@ -1,5 +1,5 @@
 \name{mysort}
-\alias{myort}
+\alias{mysort}
 \title{mysort}
 \usage{
 sort(x, decreasing = FALSE, ...)
