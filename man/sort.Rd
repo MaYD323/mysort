@@ -38,6 +38,7 @@ character string specifying the algorithm used. Not available for partial sortin
 index.return:
 
 logical indicating if the ordering index vector should be returned as well. Supported by all methods for any na.last mode and data type.
+}
 
 \description{
 mysort is a generic function for which methods can be written, and mysort.int is the internal method which is compatible with S if only the first three arguments are used.
@@ -52,6 +53,7 @@ Method "shell" uses Shellsort (an O(n^{4/3}) variant from Sedgewick (1986)). If 
 
 Method "quick" uses Singleton (1969)'s implementation of Hoare's Quicksort method and is only available when x is numeric (double or integer) and partial is NULL. (For other types of x Shellsort is used, silently.) It is normally somewhat faster than Shellsort (perhaps 50\% faster on vectors of length a million and twice as fast at a billion) but has poor performance in the rare worst case. (Peto's modification using a pseudo-random midpoint is used to make the worst case rarer.) This is not a stable sort, and ties may be reordered.
 }
+
 \examples{
 mysort(c('1','2', NA,'5','8','0', NA), partial = c(4), index.return = T, na.last = NA, method = "merge")
 #result:
