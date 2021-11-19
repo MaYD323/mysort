@@ -5,13 +5,13 @@
 sort(x, decreasing = FALSE, ...)
 
 ## Default method:
-sort(x, decreasing = FALSE, na.last = NA, ...)
+mysort(x, decreasing = FALSE, na.last = NA, ...)
 
-sort.int(x, partial = NULL, na.last = NA, decreasing = FALSE,
+mysort.int(x, partial = NULL, na.last = NA, decreasing = FALSE,
          method = c("auto", "shell", "quick", "merge"), index.return = FALSE)
 }
 \arguments{
-x:{
+x:
 
 for sort an R object with a class or a numeric, complex, character or logical vector. For sort.int, a numeric, complex, character or logical vector, or a factor.
 
@@ -21,7 +21,7 @@ logical. Should the sort be increasing or decreasing? For the "radix" method, th
 
 ... :
 
-arguments to be passed to or from methods or (for the default methods and objects without a class) to sort.int.
+arguments to be passed to or from methods or (for the default methods and objects without a class) to mysort.int.
 
 na.last:
 
@@ -38,7 +38,6 @@ character string specifying the algorithm used. Not available for partial sortin
 index.return:
 
 logical indicating if the ordering index vector should be returned as well. Supported by all methods for any na.last mode and data type.
-}
 
 \description{
 mysort is a generic function for which methods can be written, and mysort.int is the internal method which is compatible with S if only the first three arguments are used.
