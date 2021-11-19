@@ -17,7 +17,7 @@ for sort an R object with a class or a numeric, complex, character or logical ve
 
 decreasing:
 
-logical. Should the sort be increasing or decreasing? For the "radix" method, this can be a vector of length equal to the number of arguments in .... For the other methods, it must be length one. Not available for partial sorting.
+logical. Should the sort be increasing or decreasing? For the "radix" method, this can be a vector of length equal to the number of arguments in .... For the other methods, it must be length one.
 
 ... :
 
