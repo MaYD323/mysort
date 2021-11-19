@@ -38,7 +38,7 @@ all.equal(mysort(c('1','2','5','8','0')), c("0", "1", "2", "5", "8"))
 all.equal(mysort(c(3,2,4,1,5)), c(1,2,3,4,5))
 ```
 
-## The speed of mysort with no additional argument 
+## The speed of mysort on large dataset with 10,000 elements
 ```{r}
 bench::mark(mysort(c(3,2,4,1,5)))
 bench::mark(sort(c(3,2,4,1,5)))
@@ -49,6 +49,12 @@ test_vec_2 <- rnorm(10000)
 
 bench::mark(mysort(test_vec_1))
 bench::mark(sort(test_vec_2))
+
+set.seed(1)
+test_vec_1 <- rnorm(10000)
+test_vec_2 <- rnorm(10000)
+bench::mark(mysort(test_vec_1, index.return = T, method = "merge"))
+bench::mark(sort(test_vec_2, index.return = T, method = "quick"))
 ```
 
 
@@ -67,7 +73,7 @@ bench::mark(sort(x=c(3,2,4,1,5), method = 'shell'))
 ```
 The reason why is mysort slower than the original sort function is that in mysort, I intentionally keep the indexes of all the elements, in this way, we can keep the indexes of NAs and we can check the stability of each sorting methods. And I picked merge-sort rather than radix sort in mysort function, because the merge-sort is also a stable and comparison based sorting method and can be used on every comparable types, but  sort can only be used with numeric based data.
 
-# sort with na.last arguments
+## sort with na.last arguments
 ```{r}
 all.equal(mysort(c('1','2', NA,'5','8','0', NA), na.last = NA), sort(c('1','2', NA,'5','8','0', NA), na.last = NA))
 all.equal(mysort(c(NA, 3, 2, NA, 4, 1, 5, NA),  na.last = NA), sort(c(NA, 3, 2, NA, 4, 1, 5, NA),  na.last = NA))
@@ -87,7 +93,7 @@ all.equal(mysort(c(NA, 3, 2, NA, 4, 1, 5, NA), method = 'shell',  na.last = F), 
 ```
 The na.last arguments has the same result with the original sort function, however, in original sort function, we cannot choose which method to use when the na.last is not NA, but in mysort, we can choose different method for every na.last value.
 
-# sort with index.return argument
+## sort with index.return argument
 By adding the index.return argument, we will get the indexes of elements in original data after sorting
 
 There is a difference between mysort and sort, in original sort function, index.return can only be applied when "na.last = NA", i.e., it sacrificed the accuracy on index by omit all the NAs, but this way will lead to a potential trouble that if we will use our returned index to subscript the original data, using the original sort function's result will lead to a messy result, but with mysort, we will still keep the index of NAs, and return all the indexes same as the index of the elements in original object.
@@ -112,6 +118,13 @@ mysort(c('1','2', NA,'5','8','0', NA), partial = c(4), index.return = T, na.last
 mysort(c('1','2', NA,'5','8','0', NA), partial = c(4), index.return = T, na.last = F)
 ```
 
+## decreasing argument
+When decreasing is TRUE, the vector would be sorted in descending order, and when it's FLASE, then ascending order. The defualt value is FALSE
+```{r}
+all.equal(mysort(c('1','2', NA,'5','8','0', NA)), c("0","1","2","5","8"))
+all.equal(mysort(c('1','2', NA,'5','8','0', NA), decreasing = F), c("0","1","2","5","8"))
+all.equal(mysort(c('1','2', NA,'5','8','0', NA), decreasing = T), rev(c("0","1","2","5","8")))
+```
 
 
 

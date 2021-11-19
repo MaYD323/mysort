@@ -1,67 +1,52 @@
 mysort <- function(x, decreasing = FALSE, na.last = NA, partial = NULL, method = NA, index.return = NA) {
   if(sum(!is.na(c(method, index.return)))!=0 || length(partial)!=0){
     if(is.na(index.return)){
-      index.return<-FALSE
+      index.return<-FALSE #default value of index.return
     }
+    #call internal function to handle extra arguments
     return(mysort.int(x, decreasing = decreasing, na.last = na.last, partial = partial, method = method, index.return = index.return))
   }
   y<-na.omit(x)
   if(is.na(na.last)){
-    myquicksort(y, decreasing)
+    return(myquicksort(y, decreasing)) #default of quick sort to accelerate the speed of sort
   }
   else{
     if(na.last){
-      return(c(myquicksort(y, decreasing), rep(NA, sum(is.na(x)))))
+      return(c(myquicksort(y, decreasing), rep(NA, sum(is.na(x))))) #put NA at end
     }
     else{
-      return(c(rep(NA, sum(is.na(x))),myquicksort(y, decreasing)))
+      return(c(rep(NA, sum(is.na(x))),myquicksort(y, decreasing))) #put NA at start
     }
-  }
-}
-
-myquicksort <- function(x, decreasing){
-  if(length(x)<=1){
-    return(x)
-  }
-  pivot <- x[1]
-  non_pivot <- x[-1]
-  pivot_lt <- myquicksort(non_pivot[non_pivot<pivot], decreasing)
-  pivot_ge <- myquicksort(non_pivot[non_pivot>=pivot], decreasing)
-  if(decreasing){
-    return(c(pivot_ge, pivot, pivot_lt))
-  }
-  else{
-    return(c(pivot_lt, pivot, pivot_ge))
   }
 }
 
 mysort.int <- function(x, partial = NULL, na.last = NA, decreasing = FALSE,
                        method = "auto", index.return = FALSE){
 
-  idx_all <- c(1:length(x))
-  NA_index <- idx_all[is.na(x)]
-  non_NA_index <- idx_all[!is.na(x)]
+  idx_all <- c(1:length(x)) #get indexes
+  NA_index <- idx_all[is.na(x)] #get indexes of NAs
+  non_NA_index <- idx_all[!is.na(x)] #get indexes of values
   y<-na.omit(x)
 
   if(length(partial)!=0){
-    if(length(partial)<=10){
+    if(length(partial)<=10){ #If partial vector is too big, then use original sort
       partial_value <- x[partial]
       if(sum(is.na(partial_value))>0){
-        stop("partial value has NA")
+        stop("partial value has NA") #Error when some of partial vales are NA
       }
-      if(index.return){
+      if(index.return){ #return partial sorted with index
         sorted_part <- mypartial_sort(y,  decreasing = decreasing, partial_value = partial_value, idx=non_NA_index)
         if(is.na(na.last)){
           return(sorted_part)
         }
-        if(na.last){
+        if(na.last){ #put na at first
           return(list('x'=c(sorted_part$x, rep(NA, length(NA_index))), 'ix' = c(sorted_part$ix,NA_index)))
         }
-        else{
+        else{#put na at last
           return(list('x'=c(rep(NA, length(NA_index)), sorted_part$x), 'ix' = c(NA_index, sorted_part$ix)))
         }
       }
-      else{
+      else{ #return partial sorted without index
         sorted_part <- mypartial_sort(y,  decreasing = decreasing, partial_value = partial_value, idx=non_NA_index)$x
         if(is.na(na.last)){
           return(sorted_part)
@@ -76,19 +61,19 @@ mysort.int <- function(x, partial = NULL, na.last = NA, decreasing = FALSE,
     }
   }
 
-  if(is.na(method) || method == "auto"){
+  if(is.na(method) || method == "auto"){ #Automatically select sorting function
     sorted_part_with_idx <- myautosort(y,  decreasing = decreasing, idx=non_NA_index)
   }
-  else if(method == "shell"){
+  else if(method == "shell"){ #use shell sort function
     sorted_part_with_idx <- myshellsort(y,  decreasing = decreasing, idx=non_NA_index)
   }
-  else if(method == "merge"){
+  else if(method == "merge"){ #use merge sort function
     sorted_part_with_idx <- mymergesort(y,  decreasing = decreasing, idx=non_NA_index)
   }
-  else if(method == "quick"){
+  else if(method == "quick"){ #use quick sort function
     sorted_part_with_idx <- myquicksort_idx(y,  decreasing = decreasing, idx=non_NA_index)
   }
-  else{
+  else{ #throw error of invalid sort function
     stop("method has to be in c(\"auto\", \"shell\", \"quick\", \"merge\") ")
   }
   if(index.return){
@@ -116,20 +101,36 @@ mysort.int <- function(x, partial = NULL, na.last = NA, decreasing = FALSE,
   }
 }
 
+myquicksort <- function(x, decreasing){
+  if(length(x)<=1){
+    return(x) #base case
+  }
+  pivot <- x[1] #pick pivot for quick sort
+  non_pivot <- x[-1] #remove the pivot
+  pivot_lt <- myquicksort(non_pivot[non_pivot<pivot], decreasing) #sort larger than pivot part of vector recursively
+  pivot_ge <- myquicksort(non_pivot[non_pivot>=pivot], decreasing) #sort smaller than pivot part of vector recursively
+  if(decreasing){
+    return(c(pivot_ge, pivot, pivot_lt)) #descending order
+  }
+  else{
+    return(c(pivot_lt, pivot, pivot_ge)) #ascending order
+  }
+}
+
 mypartial_sort <- function(x, decreasing=FALSE, partial_value, idx){
 
   if(length(partial_value)==0){
     return(list('x'=x,'ix'=idx))
   }
-  partial_value <- myquicksort(partial_value, decreasing)
+  partial_value <- myquicksort(partial_value, decreasing) #order the pivots
   pivot <- partial_value[1]
-  if(decreasing){
+  if(decreasing){ #put larger value in before
     recur_part <- mypartial_sort(x[x<pivot], decreasing, partial_value[-1], idx[x<pivot])
     sorted_v <- c(x[x>pivot], rep(pivot, sum(x==pivot)), recur_part$x)
     sorted_idx <- c(idx[x>pivot], idx[(x==pivot)], recur_part$ix)
     return(list('x'=sorted_v, "ix"=sorted_idx))
   }
-  else{
+  else{ #put smaller value in before
     recur_part <- mypartial_sort(x[x>pivot], decreasing, partial_value[-1], idx[x>pivot])
     sorted_v <- c(x[x<pivot], rep(pivot, sum(x==pivot)), recur_part$x)
     sorted_idx <- c(idx[x<pivot], idx[(x==pivot)], recur_part$ix)
@@ -137,12 +138,13 @@ mypartial_sort <- function(x, decreasing=FALSE, partial_value, idx){
   }
 }
 
+
 mymergesort <- function(x,  decreasing = FALSE, idx){
   l <- length(x)
   if(l<=1){
     return(list("x"=x, "ix"=idx))
   }
-  else{
+  else{ #divide the vector by half and sort them seperately and merge by comparison
     half <- ceiling(l/2)
     a <- mymergesort(x[1:half], decreasing, idx[1:half])
     b <- mymergesort(x[(half+1):l], decreasing, idx[(half+1):l])
@@ -190,7 +192,7 @@ mymergesort <- function(x,  decreasing = FALSE, idx){
   }
 }
 
-myquicksort_idx <- function(x, decreasing = FALSE, idx){
+myquicksort_idx <- function(x, decreasing = FALSE, idx){ #same as the defualt quick sort but also sorted indexes
   if(length(x)<=1){
     return(list('x'=x, 'ix'=idx))
   }
@@ -212,7 +214,7 @@ myquicksort_idx <- function(x, decreasing = FALSE, idx){
   }
 }
 
-myshellsort <- function(x, decreasing = FALSE, idx){
+myshellsort <- function(x, decreasing = FALSE, idx){ #Shell sort based on interval of indexes
   n <- length(x)
   interval <- n %/% 2
   if(!decreasing){
@@ -252,7 +254,7 @@ myshellsort <- function(x, decreasing = FALSE, idx){
   return(list("x"=x, "ix"=idx))
 }
 
-myautosort <- function(x, decreasing = FALSE, idx){
+myautosort <- function(x, decreasing = FALSE, idx){ #select sort method, if sample size is small, then use mergesort, otherwise shell sort
   n <- length(x)
   if(n < 2^31){
     return(mymergesort(x, decreasing = decreasing, idx = idx))
