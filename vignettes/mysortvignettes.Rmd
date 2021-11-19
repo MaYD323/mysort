@@ -1,0 +1,117 @@
+---
+title: "mysortvignettes"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mysortvignettes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(yindisort)
+library(bench)
+```
+
+---
+title: "yindisort vignettes"
+author: "Yindi Ma"
+date: "11/18/2021"
+output: html_document
+---
+```{r}
+library(bench)
+```
+
+## sort with no extra arguments
+```{r}
+mysort(c(3,2,4,1,5))
+mysort(c('1','2','5','8','0'))
+
+all.equal(mysort(c('1','2','5','8','0')), c("0", "1", "2", "5", "8"))
+all.equal(mysort(c(3,2,4,1,5)), c(1,2,3,4,5))
+```
+
+## The speed of mysort with no additional argument 
+```{r}
+bench::mark(mysort(c(3,2,4,1,5)))
+bench::mark(sort(c(3,2,4,1,5)))
+
+set.seed(1)
+test_vec_1 <- rnorm(10000)
+test_vec_2 <- rnorm(10000)
+
+bench::mark(mysort(test_vec_1))
+bench::mark(sort(test_vec_2))
+```
+
+
+```{r}
+bench::mark(mysort(x=c(3,2,4,1,5), method = 'quick'))
+bench::mark(sort(x=c(3,2,4,1,5), method = 'quick'))
+
+bench::mark(mysort(x=c(3,2,4,1,5), method = 'auto'))
+bench::mark(sort(x=c(3,2,4,1,5), method = 'auto'))
+
+bench::mark(mysort(x=c(3,2,4,1,5), method = 'merge'))
+bench::mark(sort(x=c(3,2,4,1,5), method = 'radix'))
+
+bench::mark(mysort(x=c(3,2,4,1,5), method = 'shell'))
+bench::mark(sort(x=c(3,2,4,1,5), method = 'shell'))
+```
+The reason why is mysort slower than the original sort function is that in mysort, I intentionally keep the indexes of all the elements, in this way, we can keep the indexes of NAs and we can check the stability of each sorting methods. And I picked merge-sort rather than radix sort in mysort function, because the merge-sort is also a stable and comparison based sorting method and can be used on every comparable types, but  sort can only be used with numeric based data.
+
+# sort with na.last arguments
+```{r}
+all.equal(mysort(c('1','2', NA,'5','8','0', NA), na.last = NA), sort(c('1','2', NA,'5','8','0', NA), na.last = NA))
+all.equal(mysort(c(NA, 3, 2, NA, 4, 1, 5, NA),  na.last = NA), sort(c(NA, 3, 2, NA, 4, 1, 5, NA),  na.last = NA))
+
+all.equal(mysort(c('1','2', NA,'5','8','0', NA), na.last = T), sort(c('1','2', NA,'5','8','0', NA), na.last = T))
+all.equal(mysort(c(NA, 3, 2, NA, 4, 1, 5, NA),  na.last = T), sort(c(NA, 3, 2, NA, 4, 1, 5, NA),  na.last = T))
+
+all.equal(mysort(c('1','2', NA,'5','8','0', NA), na.last = F), sort(c('1','2', NA,'5','8','0', NA), na.last = F))
+all.equal(mysort(c(NA, 3, 2, NA, 4, 1, 5, NA),  na.last = F), sort(c(NA, 3, 2, NA, 4, 1, 5, NA),  na.last = F))
+
+all.equal(mysort(c('1','2', NA,'5','8','0', NA), method = 'quick', na.last = F), sort(c('1','2', NA,'5','8','0', NA), na.last = F))
+all.equal(mysort(c(NA, 3, 2, NA, 4, 1, 5, NA), method = 'quick',  na.last = F), sort(c(NA, 3, 2, NA, 4, 1, 5, NA),  na.last = F))
+all.equal(mysort(c('1','2', NA,'5','8','0', NA), method = 'merge', na.last = F), sort(c('1','2', NA,'5','8','0', NA), na.last = F))
+all.equal(mysort(c(NA, 3, 2, NA, 4, 1, 5, NA), method = 'merge',  na.last = F), sort(c(NA, 3, 2, NA, 4, 1, 5, NA),  na.last = F))
+all.equal(mysort(c('1','2', NA,'5','8','0', NA), method = 'shell', na.last = F), sort(c('1','2', NA,'5','8','0', NA), na.last = F))
+all.equal(mysort(c(NA, 3, 2, NA, 4, 1, 5, NA), method = 'shell',  na.last = F), sort(c(NA, 3, 2, NA, 4, 1, 5, NA),  na.last = F))
+```
+The na.last arguments has the same result with the original sort function, however, in original sort function, we cannot choose which method to use when the na.last is not NA, but in mysort, we can choose different method for every na.last value.
+
+# sort with index.return argument
+By adding the index.return argument, we will get the indexes of elements in original data after sorting
+
+There is a difference between mysort and sort, in original sort function, index.return can only be applied when "na.last = NA", i.e., it sacrificed the accuracy on index by omit all the NAs, but this way will lead to a potential trouble that if we will use our returned index to subscript the original data, using the original sort function's result will lead to a messy result, but with mysort, we will still keep the index of NAs, and return all the indexes same as the index of the elements in original object.
+
+```{r}
+mysort(c('1','2', NA,'5','8','0', NA), method = 'shell', index.return = T)
+mysort(c('1','2', NA,'5','8','0', NA), method = 'shell', na.last = F, index.return = T)
+mysort(c('1','2', NA,'5','8','0', NA), method = 'shell', na.last = T, index.return = T)
+sort(c('1','2', NA,'5','8','0', NA), index.return = T)
+```
+The result showed that the original sort function omitted the NAs first and moved indexes after NA at index 3 one unit forward, but mysort kept the original indexes and in this case, we can see the NAs' indexes which may be more convenient for users to use the returned indexes to subscript the original data.
+
+
+## sort with partial argument
+If partial is not NULL, it is taken to contain indices of elements of the result which are to be placed in their correct positions in the sorted array by partial sorting. For each of the result values in a specified position, any values smaller than that one are guaranteed to have a smaller index in the sorted array and any values which are greater are guaranteed to have a bigger index in the sorted array.
+
+This part of mysort is also a little bit different with the original sort, because, in the original sort function, for efficiency, we cannot use partial arguments along with na.last and index.return arguments, which will lead to a inconvenience that users cannot directly use the sorted result to subscript the original data, and the NAs' index information is also lost as we talked in the previous part. So in mysort, for user's convenience, I kept the indexes information of NAs and we can use na.last arguments aslong with partial arguments, but the vector for partial argument cannot contain indexes of NAs.
+
+```{r}
+mysort(c('1','2', NA,'5','8','0', NA), partial = c(4), index.return = T, na.last = NA)
+mysort(c('1','2', NA,'5','8','0', NA), partial = c(4), index.return = T, na.last = T)
+mysort(c('1','2', NA,'5','8','0', NA), partial = c(4), index.return = T, na.last = F)
+```
+
+
+
+

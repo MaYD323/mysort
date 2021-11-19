@@ -1,5 +1,8 @@
 mysort <- function(x, decreasing = FALSE, na.last = NA, partial = NULL, method = NA, index.return = NA) {
   if(sum(!is.na(c(method, index.return)))!=0 || length(partial)!=0){
+    if(is.na(index.return)){
+      index.return<-FALSE
+    }
     return(mysort.int(x, decreasing = decreasing, na.last = na.last, partial = partial, method = method, index.return = index.return))
   }
   y<-na.omit(x)
@@ -67,7 +70,7 @@ mysort.int <- function(x, partial = NULL, na.last = NA, decreasing = FALSE,
           return(c(sorted_part, rep(NA, length(NA_index))))
         }
         else{
-          return(c(rep(NA, length(NA_index), sorted_part)))
+          return(c(rep(NA, length(NA_index)), sorted_part))
         }
       }
     }
@@ -108,7 +111,7 @@ mysort.int <- function(x, partial = NULL, na.last = NA, decreasing = FALSE,
       return(c(sorted_part, rep(NA, length(NA_index))))
     }
     else{
-      return(c(rep(NA, length(NA_index), sorted_part)))
+      return(c(rep(NA, length(NA_index)), sorted_part))
     }
   }
 }

@@ -8,3 +8,5 @@ Description: Sort (or order) a vector or factor (partially) into ascending or de
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
+Suggests:knitr , rmarkdown
+VignetteBuilder: knitr
