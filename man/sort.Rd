@@ -73,7 +73,6 @@ mysort(c(3,2,4,1,5))
 x <- rnorm(1e5)
 system.time(x1 <- mysort(x, method = "shell"))
 system.time(x2 <- mysort(x, method = "quick"))
-system.time(x3 <- mysort(x, method = "merge"))
 
 ## End(Not run)
 }
