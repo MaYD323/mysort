@@ -74,5 +74,6 @@ x <- rnorm(1e5)
 system.time(x1 <- mysort(x, method = "shell"))
 system.time(x2 <- mysort(x, method = "quick"))
 
+
 ## End(Not run)
 }
